@@ -1,0 +1,274 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Saved Jobs - Job Quest{% endblock %}
+
+{% block content %}
+<section class="saved-jobs-section">
+    <div class="container">
+        <div class="page-header">
+            <h1>My Saved Jobs</h1>
+            <p>Jobs you've saved for later review</p>
+        </div>
+        
+        <div class="email-form">
+            <form method="get" class="email-search-form">
+                <div class="form-group">
+                    <input type="email" name="email" value="{{ email }}" 
+                           placeholder="Enter your email to view saved jobs" 
+                           class="form-control" required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        View Saved Jobs
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if email %}
+            {% if saved_jobs %}
+                <div class="saved-jobs-grid">
+                    {% for saved_job in saved_jobs %}
+                        <div class="job-card">
+                            <div class="job-card-header">
+                                <h3 class="job-title">
+                                    <a href="{% url 'job_detail' saved_job.job.id %}">{{ saved_job.job.title }}</a>
+                                </h3>
+                                <button class="remove-saved-btn" data-job-id="{{ saved_job.job.id }}" data-email="{{ email }}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="job-card-content">
+                                <div class="job-meta">
+                                    <span class="company">
+                                        <i class="fas fa-building"></i>
+                                        {{ saved_job.job.company_name }}
+                                    </span>
+                                    <span class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ saved_job.job.location }}
+                                    </span>
+                                    <span class="date-saved">
+                                        <i class="fas fa-heart"></i>
+                                        Saved {{ saved_job.saved_at|timesince }} ago
+                                    </span>
+                                </div>
+                                <p class="job-description">{{ saved_job.job.get_short_description }}</p>
+                                <div class="job-actions">
+                                    <a href="{% url 'job_detail' saved_job.job.id %}" class="btn btn-primary">
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'apply_job' saved_job.job.id %}" class="btn btn-secondary">
+                                        Apply Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-jobs-message">
+                    <div class="no-jobs-icon">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <h3>No saved jobs found</h3>
+                    <p>You haven't saved any jobs yet. Start browsing and save jobs that interest you!</p>
+                    <a href="{% url 'job_list' %}" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        Browse Jobs
+                    </a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove saved job functionality
+    document.querySelectorAll('.remove-saved-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to remove this job from your saved list?')) {
+                const jobId = this.dataset.jobId;
+                const email = this.dataset.email;
+                
+                // Here you would typically make an AJAX request to remove the saved job
+                // For now, we'll just remove the card from the DOM
+                this.closest('.job-card').remove();
+                
+                // Check if there are any remaining cards
+                const remainingCards = document.querySelectorAll('.job-card');
+                if (remainingCards.length === 0) {
+                    location.reload(); // Reload to show "no saved jobs" message
+                }
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.saved-jobs-section {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.email-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.email-search-form {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.email-search-form .form-group {
+    flex: 1;
+    margin: 0;
+}
+
+.saved-jobs-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.job-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.job-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.job-title {
+    margin: 0;
+    flex: 1;
+}
+
+.job-title a {
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.job-title a:hover {
+    color: #3498db;
+}
+
+.remove-saved-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.remove-saved-btn:hover {
+    background-color: #fee;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.job-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.job-description {
+    color: #5a6c7d;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.job-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.no-jobs-message {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.no-jobs-icon {
+    font-size: 4rem;
+    color: #bdc3c7;
+    margin-bottom: 1rem;
+}
+
+.no-jobs-message h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.no-jobs-message p {
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .email-search-form {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .job-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .job-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

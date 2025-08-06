@@ -28,6 +28,10 @@
                         <i class="fas fa-search"></i>
                         Browse Jobs
                     </a>
+                    <a href="{% url 'saved_jobs' %}" class="nav-link {% if request.resolver_match.url_name == 'saved_jobs' %}active{% endif %}">
+                        <i class="fas fa-heart"></i>
+                        Saved Jobs
+                    </a>
                 </div>
             </div>
         </nav>

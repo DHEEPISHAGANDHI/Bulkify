@@ -3,6 +3,7 @@
 {% block title %}{{ job.title }} at {{ job.company_name }} - Job Quest{% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <section class="job-detail-header">
     <div class="container">
         <nav class="breadcrumb">
@@ -32,15 +33,15 @@
                 </div>
             </div>
             <div class="job-header-actions">
-                <button class="btn btn-primary btn-large">
+                <a href="{% url 'apply_job' job.id %}" class="btn btn-primary btn-large">
                     <i class="fas fa-paper-plane"></i>
                     Apply Now
-                </button>
-                <button class="btn btn-secondary">
+                </a>
+                <button class="btn btn-secondary" id="saveJobBtn" data-job-id="{{ job.id }}">
                     <i class="far fa-heart"></i>
                     Save Job
                 </button>
-                <button class="btn btn-secondary">
+                <button class="btn btn-secondary" id="shareJobBtn" data-job-id="{{ job.id }}">
                     <i class="fas fa-share"></i>
                     Share
                 </button>
@@ -185,4 +186,257 @@
         </div>
     </div>
 </section>
+
+<!-- Save Job Modal -->
+<div id="saveJobModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Save Job</h3>
+            <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Enter your email to save this job for later:</p>
+            <form id="saveJobForm">
+                <input type="email" id="saveJobEmail" placeholder="your.email@example.com" required>
+                <button type="submit" class="btn btn-primary">Save Job</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Share Job Modal -->
+<div id="shareJobModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Share Job</h3>
+            <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Share this job opportunity:</p>
+            <div class="share-options">
+                <button class="share-btn" id="copyLinkBtn">
+                    <i class="fas fa-link"></i>
+                    Copy Link
+                </button>
+                <button class="share-btn" id="shareEmailBtn">
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </button>
+                <button class="share-btn" id="shareLinkedInBtn">
+                    <i class="fab fa-linkedin"></i>
+                    LinkedIn
+                </button>
+                <button class="share-btn" id="shareTwitterBtn">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </button>
+            </div>
+            <div class="share-link-container">
+                <input type="text" id="shareLink" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const saveJobBtn = document.getElementById('saveJobBtn');
+    const shareJobBtn = document.getElementById('shareJobBtn');
+    const saveJobModal = document.getElementById('saveJobModal');
+    const shareJobModal = document.getElementById('shareJobModal');
+    const saveJobForm = document.getElementById('saveJobForm');
+    
+    // Modal functionality
+    function openModal(modal) {
+        modal.style.display = 'block';
+    }
+    
+    function closeModal(modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Close modal when clicking the X
+    document.querySelectorAll('.modal-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            closeModal(this.closest('.modal'));
+        });
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target);
+        }
+    });
+    
+    // Save Job functionality
+    saveJobBtn.addEventListener('click', function() {
+        openModal(saveJobModal);
+    });
+    
+    saveJobForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('saveJobEmail').value;
+        const jobId = saveJobBtn.dataset.jobId;
+        
+        fetch(`/jobs/${jobId}/save/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: `email=${encodeURIComponent(email)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.status === 'success') {
+                closeModal(saveJobModal);
+                saveJobBtn.innerHTML = '<i class="fas fa-heart"></i> Saved';
+                saveJobBtn.disabled = true;
+            }
+        })
+        .catch(error => {
+            alert('Error saving job. Please try again.');
+        });
+    });
+    
+    // Share Job functionality
+    shareJobBtn.addEventListener('click', function() {
+        const jobId = shareJobBtn.dataset.jobId;
+        const currentUrl = window.location.href;
+        document.getElementById('shareLink').value = currentUrl;
+        openModal(shareJobModal);
+    });
+    
+    // Copy link functionality
+    document.getElementById('copyLinkBtn').addEventListener('click', function() {
+        const shareLink = document.getElementById('shareLink');
+        shareLink.select();
+        document.execCommand('copy');
+        alert('Link copied to clipboard!');
+    });
+    
+    // Email sharing
+    document.getElementById('shareEmailBtn').addEventListener('click', function() {
+        const jobTitle = '{{ job.title|escapejs }}';
+        const company = '{{ job.company_name|escapejs }}';
+        const url = document.getElementById('shareLink').value;
+        const subject = `Job Opportunity: ${jobTitle} at ${company}`;
+        const body = `I found this job opportunity that might interest you:\n\n${jobTitle} at ${company}\n\nCheck it out: ${url}`;
+        window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+    });
+    
+    // LinkedIn sharing
+    document.getElementById('shareLinkedInBtn').addEventListener('click', function() {
+        const url = document.getElementById('shareLink').value;
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`);
+    });
+    
+    // Twitter sharing
+    document.getElementById('shareTwitterBtn').addEventListener('click', function() {
+        const jobTitle = '{{ job.title|escapejs }}';
+        const company = '{{ job.company_name|escapejs }}';
+        const url = document.getElementById('shareLink').value;
+        const text = `Check out this job opportunity: ${jobTitle} at ${company}`;
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+    });
+});
+</script>
+
+<style>
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.modal-close {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+}
+
+.modal-close:hover {
+    color: #2c3e50;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body input[type="email"], .modal-body input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 4px;
+    margin: 1rem 0;
+    font-size: 1rem;
+}
+
+.share-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.share-btn {
+    padding: 0.75rem;
+    border: 2px solid #ecf0f1;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.share-btn:hover {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.share-link-container {
+    margin-top: 1rem;
+}
+
+.share-link-container input {
+    background-color: #f8f9fa;
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+</style>
 {% endblock %}

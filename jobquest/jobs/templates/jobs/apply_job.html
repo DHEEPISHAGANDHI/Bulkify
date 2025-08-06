@@ -1,0 +1,340 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}Apply for {{ job.title }} at {{ job.company_name }} - Job Quest{% endblock %}
+
+{% block content %}
+<section class="application-form-section">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'job_list' %}" class="breadcrumb-link">Jobs</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'job_detail' job.id %}" class="breadcrumb-link">{{ job.title }}</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Apply</span>
+        </nav>
+        
+        <div class="application-header">
+            <h1>Apply for {{ job.title }}</h1>
+            <div class="job-info">
+                <span class="company">{{ job.company_name }}</span>
+                <span class="location">{{ job.location }}</span>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="application-form-container">
+            <form method="post" enctype="multipart/form-data" class="application-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="form-error">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="form-error">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="form-error">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.phone_number.label_tag }}
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <div class="form-error">{{ form.phone_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Professional Information</h3>
+                    <div class="form-group">
+                        {{ form.experience_years.label_tag }}
+                        {{ form.experience_years }}
+                        {% if form.experience_years.errors %}
+                            <div class="form-error">{{ form.experience_years.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form.current_salary.label_tag }}
+                            {{ form.current_salary }}
+                            {% if form.current_salary.errors %}
+                                <div class="form-error">{{ form.current_salary.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.expected_salary.label_tag }}
+                            {{ form.expected_salary }}
+                            {% if form.expected_salary.errors %}
+                                <div class="form-error">{{ form.expected_salary.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.availability_date.label_tag }}
+                        {{ form.availability_date }}
+                        {% if form.availability_date.errors %}
+                            <div class="form-error">{{ form.availability_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Documents & Links</h3>
+                    <div class="form-group">
+                        {{ form.resume.label_tag }}
+                        {{ form.resume }}
+                        <small class="form-help">Accepted formats: PDF, DOC, DOCX (Max 5MB)</small>
+                        {% if form.resume.errors %}
+                            <div class="form-error">{{ form.resume.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form.linkedin_url.label_tag }}
+                            {{ form.linkedin_url }}
+                            {% if form.linkedin_url.errors %}
+                                <div class="form-error">{{ form.linkedin_url.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ form.portfolio_url.label_tag }}
+                            {{ form.portfolio_url }}
+                            {% if form.portfolio_url.errors %}
+                                <div class="form-error">{{ form.portfolio_url.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Cover Letter</h3>
+                    <div class="form-group">
+                        {{ form.cover_letter.label_tag }}
+                        {{ form.cover_letter }}
+                        {% if form.cover_letter.errors %}
+                            <div class="form-error">{{ form.cover_letter.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Additional Information</h3>
+                    <div class="form-group checkbox-group">
+                        {{ form.willing_to_relocate }}
+                        {{ form.willing_to_relocate.label_tag }}
+                        {% if form.willing_to_relocate.errors %}
+                            <div class="form-error">{{ form.willing_to_relocate.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.additional_info.label_tag }}
+                        {{ form.additional_info }}
+                        {% if form.additional_info.errors %}
+                            <div class="form-error">{{ form.additional_info.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Application
+                    </button>
+                    <a href="{% url 'job_detail' job.id %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Job
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+.application-form-section {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.application-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.application-header h1 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.job-info {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.job-info .company {
+    font-weight: 600;
+    margin-right: 1rem;
+}
+
+.application-form-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.application-form {
+    padding: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.form-section h3 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+    border-left: 4px solid #3498db;
+    padding-left: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    color: #7f8c8d;
+    font-size: 0.875rem;
+}
+
+.form-error {
+    color: #e74c3c;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .application-form {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
