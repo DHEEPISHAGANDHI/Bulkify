@@ -1,0 +1,188 @@
+{% extends 'jobs/base.html' %}
+
+{% block title %}{{ job.title }} at {{ job.company_name }} - Job Quest{% endblock %}
+
+{% block content %}
+<section class="job-detail-header">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'job_list' %}" class="breadcrumb-link">Jobs</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">{{ job.title }}</span>
+        </nav>
+        
+        <div class="job-header">
+            <div class="job-header-content">
+                <h1 class="job-detail-title">{{ job.title }}</h1>
+                <div class="job-header-meta">
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>{{ job.company_name }}</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ job.location }}</span>
+                    </div>
+                    <div class="job-posted">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Posted {{ job.posting_date|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="job-header-actions">
+                <button class="btn btn-primary btn-large">
+                    <i class="fas fa-paper-plane"></i>
+                    Apply Now
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="far fa-heart"></i>
+                    Save Job
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="job-detail-content">
+    <div class="container">
+        <div class="job-detail-grid">
+            <main class="job-main-content">
+                <div class="job-section">
+                    <h2 class="section-title">Job Description</h2>
+                    <div class="job-description">
+                        {{ job.description|linebreaks }}
+                    </div>
+                </div>
+
+                <div class="job-section">
+                    <h2 class="section-title">About This Position</h2>
+                    <div class="job-highlights">
+                        <div class="highlight-item">
+                            <i class="fas fa-building"></i>
+                            <div class="highlight-content">
+                                <h3>Company</h3>
+                                <p>{{ job.company_name }}</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="highlight-content">
+                                <h3>Location</h3>
+                                <p>{{ job.location }}</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div class="highlight-content">
+                                <h3>Posted</h3>
+                                <p>{{ job.posting_date|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div class="highlight-content">
+                                <h3>Job Type</h3>
+                                <p>Full-time</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="job-section">
+                    <h2 class="section-title">How to Apply</h2>
+                    <div class="apply-instructions">
+                        <p>Ready to take the next step in your career? Apply now to join {{ job.company_name }} as a {{ job.title }}.</p>
+                        <div class="apply-actions">
+                            <button class="btn btn-primary btn-large">
+                                <i class="fas fa-paper-plane"></i>
+                                Apply for This Position
+                            </button>
+                            <p class="apply-note">
+                                <i class="fas fa-info-circle"></i>
+                                Applications are reviewed on a rolling basis
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="job-sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Quick Apply</h3>
+                    <p class="sidebar-description">Interested in this position? Apply now and we'll get back to you soon.</p>
+                    <button class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i>
+                        Apply Now
+                    </button>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Job Summary</h3>
+                    <ul class="job-summary">
+                        <li>
+                            <span class="summary-label">Position:</span>
+                            <span class="summary-value">{{ job.title }}</span>
+                        </li>
+                        <li>
+                            <span class="summary-label">Company:</span>
+                            <span class="summary-value">{{ job.company_name }}</span>
+                        </li>
+                        <li>
+                            <span class="summary-label">Location:</span>
+                            <span class="summary-value">{{ job.location }}</span>
+                        </li>
+                        <li>
+                            <span class="summary-label">Posted:</span>
+                            <span class="summary-value">{{ job.posting_date|date:"M d, Y" }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Share This Job</h3>
+                    <div class="share-buttons">
+                        <button class="share-btn" title="Share on LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </button>
+                        <button class="share-btn" title="Share on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="share-btn" title="Share on Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </button>
+                        <button class="share-btn" title="Copy Link">
+                            <i class="fas fa-link"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Similar Jobs</h3>
+                    <p class="sidebar-description">Explore other opportunities that might interest you.</p>
+                    <a href="{% url 'job_list' %}" class="btn btn-outline btn-full">
+                        <i class="fas fa-search"></i>
+                        Browse Similar Jobs
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<section class="job-navigation">
+    <div class="container">
+        <div class="nav-links">
+            <a href="{% url 'job_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Job Listings
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

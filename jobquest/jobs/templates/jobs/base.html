@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Job Quest - Professional Job Board{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="{% url 'home' %}" class="brand-link">
+                        <i class="fas fa-briefcase"></i>
+                        <span class="brand-text">Job Quest</span>
+                    </a>
+                </div>
+                <div class="nav-menu">
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <a href="{% url 'job_list' %}" class="nav-link {% if request.resolver_match.url_name == 'job_list' %}active{% endif %}">
+                        <i class="fas fa-search"></i>
+                        Browse Jobs
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">
+                        <i class="fas fa-briefcase"></i>
+                        Job Quest
+                    </h3>
+                    <p class="footer-description">
+                        Your professional gateway to exciting career opportunities. 
+                        Connecting talented professionals with leading companies.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'job_list' %}">Browse Jobs</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Technology</a></li>
+                        <li><a href="#">Marketing</a></li>
+                        <li><a href="#">Design</a></li>
+                        <li><a href="#">Finance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Job Quest. All rights reserved. Built with Django.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>
